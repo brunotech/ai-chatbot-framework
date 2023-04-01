@@ -40,38 +40,42 @@ class EntityExtractor:
         postag = sent[i][1]
         features = [
             'bias',
-            'word.lower=' + word.lower(),
-            'word[-3:]=' + word[-3:],
-            'word[-2:]=' + word[-2:],
-            'word.isupper=%s' % word.isupper(),
-            'word.istitle=%s' % word.istitle(),
-            'word.isdigit=%s' % word.isdigit(),
-            'postag=' + postag,
-            'postag[:2]=' + postag[:2],
+            f'word.lower={word.lower()}',
+            f'word[-3:]={word[-3:]}',
+            f'word[-2:]={word[-2:]}',
+            f'word.isupper={word.isupper()}',
+            f'word.istitle={word.istitle()}',
+            f'word.isdigit={word.isdigit()}',
+            f'postag={postag}',
+            f'postag[:2]={postag[:2]}',
         ]
         if i > 0:
             word1 = sent[i - 1][0]
             postag1 = sent[i - 1][1]
-            features.extend([
-                '-1:word.lower=' + word1.lower(),
-                '-1:word.istitle=%s' % word1.istitle(),
-                '-1:word.isupper=%s' % word1.isupper(),
-                '-1:postag=' + postag1,
-                '-1:postag[:2]=' + postag1[:2],
-            ])
+            features.extend(
+                [
+                    f'-1:word.lower={word1.lower()}',
+                    f'-1:word.istitle={word1.istitle()}',
+                    f'-1:word.isupper={word1.isupper()}',
+                    f'-1:postag={postag1}',
+                    f'-1:postag[:2]={postag1[:2]}',
+                ]
+            )
         else:
             features.append('BOS')
 
         if i < len(sent) - 1:
             word1 = sent[i + 1][0]
             postag1 = sent[i + 1][1]
-            features.extend([
-                '+1:word.lower=' + word1.lower(),
-                '+1:word.istitle=%s' % word1.istitle(),
-                '+1:word.isupper=%s' % word1.isupper(),
-                '+1:postag=' + postag1,
-                '+1:postag[:2]=' + postag1[:2],
-            ])
+            features.extend(
+                [
+                    f'+1:word.lower={word1.lower()}',
+                    f'+1:word.istitle={word1.istitle()}',
+                    f'+1:word.isupper={word1.isupper()}',
+                    f'+1:postag={postag1}',
+                    f'+1:postag[:2]={postag1[:2]}',
+                ]
+            )
         else:
             features.append('EOS')
 
@@ -123,7 +127,7 @@ class EntityExtractor:
             # include transitions that are possible, but not observed
             'feature.possible_transitions': True
         })
-        trainer.train('model_files/%s.model' % model_name)
+        trainer.train(f'model_files/{model_name}.model')
         return True
 
     # Extract Labels from BIO tagged sentence
@@ -142,7 +146,7 @@ class EntityExtractor:
                     labeled[label] = s
                     labels.add(label)
                 elif tp.startswith("I") and (label in labels):
-                    labeled[label] += " %s" % s
+                    labeled[label] += f" {s}"
         return labeled
 
     def extract_ner_labels(self, predicted_labels):
@@ -151,11 +155,7 @@ class EntityExtractor:
         :param predicted_labels:
         :return:
         """
-        labels = []
-        for tp in predicted_labels:
-            if tp != "O":
-                labels.append(tp[2:])
-        return labels
+        return [tp[2:] for tp in predicted_labels if tp != "O"]
 
     def predict(self, model_name, sentence):
         """
@@ -170,7 +170,7 @@ class EntityExtractor:
         words = [token.text for token in doc]
         tagged_token = pos_tagger(sentence)
         tagger = pycrfsuite.Tagger()
-        tagger.open("{}/{}.model".format(app.config["MODELS_DIR"], model_name))
+        tagger.open(f'{app.config["MODELS_DIR"]}/{model_name}.model')
         predicted_labels = tagger.tag(self.sent_to_features(tagged_token))
         extracted_entities = self.crf2json(
             zip(words, predicted_labels))
@@ -199,7 +199,7 @@ class EntityExtractor:
                     begin_index = enitity.get("begin")
                     end_index = enitity.get("end")
                     # find no of words before the entity
-                    inverse_selection = example.get("text")[0:begin_index - 1]
+                    inverse_selection = example.get("text")[:begin_index - 1]
                     inverse_selection = sentence_tokenize(inverse_selection)
                     inverse_selection = inverse_selection.split(" ")
                     inverse_word_count = len(inverse_selection)
@@ -213,10 +213,7 @@ class EntityExtractor:
 
                     # build BIO tagging
                     for i in range(1, selection_word_count + 1):
-                        if i == 1:
-                            bio = "B-" + enitity.get("name")
-                        else:
-                            bio = "I-" + enitity.get("name")
+                        bio = "B-" + enitity.get("name") if i == 1 else "I-" + enitity.get("name")
                         tagged_example[(inverse_word_count + i) - 1][2] = bio
                 except:
                     # catches and skips invalid offsets and annotation

@@ -36,10 +36,7 @@ class ApiDetails(EmbeddedDocument):
     jsonData = StringField(default="{}")
 
     def get_headers(self):
-        headers = {}
-        for header in self.headers:
-            headers[header["headerKey"]] = header["headerValue"]
-        return headers
+        return {header["headerKey"]: header["headerValue"] for header in self.headers}
 
 
 class Intent(Document):

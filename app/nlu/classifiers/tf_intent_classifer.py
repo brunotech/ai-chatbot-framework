@@ -148,7 +148,7 @@ class TfIntentClassifier:
                        for intent in intents.flatten()]
             probabilities = probabilities.flatten()
 
-            if len(intents) > 0 and len(probabilities) > 0:
+            if intents and len(probabilities) > 0:
                 ranking = list(zip(list(intents), list(probabilities)))
                 ranking = ranking[:INTENT_RANKING_LENGTH]
 
@@ -162,7 +162,4 @@ class TfIntentClassifier:
             else:
                 intent = {"name": None, "confidence": 0.0}
                 intent_ranking = []
-        if return_type == "intent":
-            return intent
-        else:
-            return intent_ranking
+        return intent if return_type == "intent" else intent_ranking

@@ -35,7 +35,9 @@ def call_api(url, type, headers={}, parameters={}, is_json=False):
     :param is_json:
     :return:
     """
-    app.logger.info("Initiating API Call with following info: url => {} payload => {}".format(url, parameters))
+    app.logger.info(
+        f"Initiating API Call with following info: url => {url} payload => {parameters}"
+    )
     if "GET" in type:
         response = requests.get(url, headers=headers, params=parameters, timeout=5)
     elif "POST" in type:

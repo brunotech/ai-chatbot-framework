@@ -3,7 +3,7 @@ from flask import Flask,send_from_directory
 from flask_cors import CORS
 from flask_mongoengine import MongoEngine
 
-APP_ROOT = os.path.dirname(os.path.abspath(__file__ + "../../"))
+APP_ROOT = os.path.dirname(os.path.abspath(f"{__file__}../../"))
 
 db = MongoEngine()
 
@@ -17,8 +17,8 @@ def create_app(env = 'Development'):
         env = os.environ['APPLICATION_ENV']
     except KeyError as e:
         app.logger.info('Unknown environment key, defaulting to Development')
-        
-    app.config.from_object('config.%s' % env)
+
+    app.config.from_object(f'config.{env}')
     db.init_app(app)
 
     import spacy

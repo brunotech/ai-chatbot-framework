@@ -60,7 +60,7 @@ class SklearnIntentClassifier:
                 cloudpickle.dump(classifier.best_estimator_, f)
 
                 if verbose:
-                    print("Model written out to {}".format(outpath))
+                    print(f"Model written out to {outpath}")
 
         return classifier.best_estimator_
 
@@ -103,7 +103,7 @@ class SklearnIntentClassifier:
                        for intent in intents.flatten()]
             probabilities = probabilities.flatten()
 
-            if len(intents) > 0 and len(probabilities) > 0:
+            if intents and len(probabilities) > 0:
                 ranking = list(zip(list(intents), list(probabilities)))
                 ranking = ranking[:INTENT_RANKING_LENGTH]
 

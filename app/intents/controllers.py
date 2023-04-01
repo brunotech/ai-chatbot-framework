@@ -113,7 +113,7 @@ def delete_intent(id):
 
     # remove NER model for the deleted story
     try:
-        os.remove("{}/{}.model".format(app.config["MODELS_DIR"], id))
+        os.remove(f'{app.config["MODELS_DIR"]}/{id}.model')
     except OSError:
         pass
     return build_response.sent_ok()

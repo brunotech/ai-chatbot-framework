@@ -23,7 +23,7 @@ def migrate():
     from app.intents.controllers import import_json
     json_file = open("examples/default_intents.json", "r+")
     stories = import_json(json_file)
-    print("Imported {} Stories".format(len(stories)))
+    print(f"Imported {len(stories)} Stories")
 
     try:
         print("Training models..")
@@ -34,7 +34,7 @@ def migrate():
         e = str(e)
         if e == "NO_DATA":
             e = "load Data first into mongodb. Reffer Readme."
-        print("Could not train models..skipping.. (reason: {})".format(e))
+        print(f"Could not train models..skipping.. (reason: {e})")
 
 
 if __name__ == "__main__":

@@ -71,10 +71,7 @@ def pos_tagger(sentence):
     :return:
     """
     doc = spacy_tokenizer(sentence)
-    taged_sentance = []
-    for token in doc:
-        taged_sentance.append((token.text, token.tag_))
-    return taged_sentance
+    return [(token.text, token.tag_) for token in doc]
 
 
 def pos_tag_and_label(sentence):
@@ -84,10 +81,7 @@ def pos_tag_and_label(sentence):
     :return:
     """
     tagged_sentence = pos_tagger(sentence)
-    tagged_sentence_json = []
-    for token, postag in tagged_sentence:
-        tagged_sentence_json.append([token, postag, "O"])
-    return tagged_sentence_json
+    return [[token, postag, "O"] for token, postag in tagged_sentence]
 
 
 def sentence_tokenize(sentences):

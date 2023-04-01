@@ -13,8 +13,7 @@ from mongoengine.fields import SortedListField
 def date_from_string(timeString):
     cal = pdt.Calendar()
     now = datetime.now()
-    result = str(cal.parseDT(timeString.strip(), now)[0])
-    return result
+    return str(cal.parseDT(timeString.strip(), now)[0])
 
 
 def update_document(document, data_dict):
@@ -54,6 +53,4 @@ def update_document(document, data_dict):
 
 
 def is_list_empty(inList):
-    if isinstance(inList, list):  # Is a list
-        return all(map(is_list_empty, inList))
-    return False  # Not a list
+    return all(map(is_list_empty, inList)) if isinstance(inList, list) else False
